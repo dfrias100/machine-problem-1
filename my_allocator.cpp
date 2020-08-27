@@ -1,10 +1,10 @@
 /* 
  File: my_allocator.cpp
  
- Author: <your name>
+ Author: Daniel Frias
  Department of Computer Science
  Texas A&M University
- Date  : <date>
+ Date  : 2020/08/26
  
  Modified:
  

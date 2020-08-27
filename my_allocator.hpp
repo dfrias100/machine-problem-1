@@ -1,10 +1,10 @@
 /* 
     File: my_allocator.hpp
 
-    Author: <author>
+    Author: Daniel Frias
             Department of Computer Science and Engineering
             Texas A&M University
-    Date  : <date>
+    Date  : 2020/08/26
 
     Modified:
 

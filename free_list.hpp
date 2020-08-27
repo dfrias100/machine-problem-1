@@ -4,7 +4,7 @@
     Author: Daniel Frias
             Department of Computer Science and Engineering
             Texas A&M University
-    Date  : August 26, 2020
+    Date  : 2020/08/26
 
     Modified:
 

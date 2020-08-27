@@ -31,6 +31,8 @@
 
 #include "my_allocator.hpp"
 
+#include <unistd.h>
+
 /*--------------------------------------------------------------------------*/
 /* NAME SPACES */ 
 /*--------------------------------------------------------------------------*/
@@ -187,10 +189,25 @@ int main(int argc, char * argv[]) {
     
     
     // In your version, these parameters are passed as command-line arguments!
-    
-    size_t block_size = 1024; /* 1kB -- CHANGE THIS! */
-    size_t mem_size = 1024 * block_size; /* 1MB -- CHANGE THIS! */
-    
+
+    size_t block_size = 128; /* 128 B */
+    size_t mem_size = 4096 * block_size; /* 512 kB */
+
+    int opt;
+
+    while((opt = getopt(argc, argv, "b:s:")) != -1) {
+        switch (opt) {
+            case 'b':
+                block_size = atoi(optarg);
+                break;
+            case 's':
+                mem_size = atoi(optarg);
+                break;
+            case '?':
+                return 1;
+        }
+    }
+
     for (;;) { // Loop forewer, or until we break.
         
         // Create new allocator (gets destroyed automatically at end of iteration)

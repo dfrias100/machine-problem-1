@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include "free_list.hpp"
+#include <cassert>
 
 /*--------------------------------------------------------------------------*/
 /* NAME SPACES */ 

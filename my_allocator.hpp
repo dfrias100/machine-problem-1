@@ -46,6 +46,9 @@ class MyAllocator {
  private:
 
   // YOU MAY NEED TO ADD YOUR OWN DATA STRUCTURES HERE.
+  void* start;
+  char* current_start;
+  size_t remaining_memory;
   
  public:
   MyAllocator(size_t _basic_block_size, size_t _size); 

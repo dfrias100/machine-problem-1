@@ -57,23 +57,29 @@ using namespace std;
 /*--------------------------------------------------------------------------*/
 
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) {
-    // We don't do anything yet...
+    start = std::malloc(_size);
+    current_start = (char *)start;
+    remaining_memory = _size;
 }
 
 MyAllocator::~MyAllocator() {
-    // Same here...
+    std::free(start);
 }
 
 void* MyAllocator::Malloc(size_t _length) {
-    // This empty implementation just uses C standard library malloc
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
-    return std::malloc(_length);
+    if (_length > remaining_memory)
+        return NULL;
+    void* res = (void *)current_start;
+    current_start += _length;
+    return res;
+    //return std::malloc(_length);
 }
 
 bool MyAllocator::Free(void* _a) {
     // This empty implementation just uses C standard library free
     cout << "MyAllocator::Free called" << endl;
-    std::free(_a);
+    //std::free(_a);
     return true;
 }
 

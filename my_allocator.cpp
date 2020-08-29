@@ -58,28 +58,27 @@ using namespace std;
 
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) {
     start = std::malloc(_size);
-    current_start = (char *)start;
+    current_start = (char *)start; // start is a void pointer, needs to be cast to a char pointer
     remaining_memory = _size;
 }
 
 MyAllocator::~MyAllocator() {
-    std::free(start);
+    std::free(start); // Free all the memory from the salami allocator
 }
 
 void* MyAllocator::Malloc(size_t _length) {
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
     if (_length > remaining_memory)
         return NULL;
-    void* res = (void *)current_start;
+    void* res = (void *)current_start; // current_start is a char pointer, needs to be cast to a void pointer
     current_start += _length;
-    return res;
-    //return std::malloc(_length);
+    return res; // Return the pointer to the memory
+    // return std::malloc(_length);
 }
 
 bool MyAllocator::Free(void* _a) {
-    // This empty implementation just uses C standard library free
     cout << "MyAllocator::Free called" << endl;
-    //std::free(_a);
+    //std::free(_a); Salami allocator doesn't free anything
     return true;
 }
 

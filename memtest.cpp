@@ -31,7 +31,7 @@
 
 #include "my_allocator.hpp"
 
-#include <unistd.h>
+#include <unistd.h> // For getopts()
 
 /*--------------------------------------------------------------------------*/
 /* NAME SPACES */ 
@@ -201,6 +201,7 @@ int main(int argc, char * argv[]) {
                 block_size = atoi(optarg);
                 break;
             case 's':
+                // memory size should be in bytes
                 mem_size = atoi(optarg);
                 break;
             case ':':

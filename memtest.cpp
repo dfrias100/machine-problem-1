@@ -195,7 +195,7 @@ int main(int argc, char * argv[]) {
 
     int opt;
 
-    while((opt = getopt(argc, argv, "b:s:")) != -1) {
+    while((opt = getopt(argc, argv, ":b:s:")) != -1) {
         switch (opt) {
             case 'b':
                 block_size = atoi(optarg);
@@ -203,9 +203,18 @@ int main(int argc, char * argv[]) {
             case 's':
                 mem_size = atoi(optarg);
                 break;
+            case ':':
+                cout << "Option requires an argument" << endl;
+                return 1;
             case '?':
+                cout << "Unknown argument" << endl;
                 return 1;
         }
+    }
+
+    if (block_size == 0 || mem_size == 0) {
+        cout << "Please provide a block size or memory size." << endl;
+        return 1;
     }
 
     for (;;) { // Loop forewer, or until we break.

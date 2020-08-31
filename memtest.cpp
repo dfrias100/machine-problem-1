@@ -148,7 +148,7 @@ int ackerman(int a, int b) {
 
 /*--------------------------------------------------------------------------*/
 /* UTILITY FUNCTIONS */
-/*--------------------------------------------------------------------------*/]
+/*--------------------------------------------------------------------------*/ 
 
 void print_time_diff(const string _label,
                      const struct timeval & _tp1,
@@ -201,7 +201,7 @@ int main(int argc, char * argv[]) {
                 block_size = atoi(optarg);
                 break;
             case 's':
-                // memory size should be in bytes
+                // Memory size should be in bytes
                 mem_size = atoi(optarg);
                 break;
             case ':':

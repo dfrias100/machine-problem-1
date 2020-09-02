@@ -24,6 +24,7 @@
 
 #include <cstdlib>
 #include "my_allocator.hpp"
+#include "free_list.hpp"
 #include <assert.h>
 #include <iostream>
 
@@ -56,29 +57,48 @@ using namespace std;
 /* FUNCTIONS FOR CLASS MyAllocator */
 /*--------------------------------------------------------------------------*/
 
-MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) {
+MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _sz(_size), _blk_sz(_basic_block_size) {
     start = std::malloc(_size);
-    current_start = (char *)start; // start is a void pointer, needs to be cast to a char pointer
-    remaining_memory = _size;
+    SegmentHeader* init_seg = new (start) SegmentHeader(_size, 1);
+    free_list.Add(init_seg);
 }
 
 MyAllocator::~MyAllocator() {
-    std::free(start); // Free all the memory from the salami allocator
+    std::free(start); // Free all the memory from the allocator
 }
 
 void* MyAllocator::Malloc(size_t _length) {
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
-    if (_length > remaining_memory)
+    size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
+    len *= _blk_sz;
+    if (len < _length) {
+        len = (_length + sizeof(SegmentHeader)) / _blk_sz;
+        len++;
+        len *= _blk_sz;
+    }
+    SegmentHeader* seg = free_list.Head();
+    
+    while (seg != nullptr && seg->Length() < len) {
+        seg = seg->Next();
+    }
+
+    if (seg == nullptr)
         return NULL;
-    void* res = (void *)current_start; // current_start is a char pointer, needs to be cast to a void pointer
-    current_start += _length;
-    return res; // Return the pointer to the memory
-    // return std::malloc(_length);
+    
+    free_list.Remove(seg);
+
+    if (seg->Length() > len) {
+        SegmentHeader* seg2 = seg->Split(len);
+        free_list.Add(seg2);
+    }
+    void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
+    return ptr;
 }
 
 bool MyAllocator::Free(void* _a) {
     cout << "MyAllocator::Free called" << endl;
-    //std::free(_a); Salami allocator doesn't free anything
+    SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
+    free_list.Add(seg);
     return true;
 }
 

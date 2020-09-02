@@ -66,7 +66,6 @@ SegmentHeader::~SegmentHeader() {
   // You may need to add code here.
 }
 
-
 void SegmentHeader::CheckValid() {
   if (cookie != COOKIE_VALUE) {
     cout << "INVALID SEGMENT HEADER!!" << endl;
@@ -76,6 +75,12 @@ void SegmentHeader::CheckValid() {
   }
 }
 
+SegmentHeader* SegmentHeader::Split(size_t _length) {
+  SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length, 1);
+  this->length = _length;
+  return seg_new;
+}
+ 
 /*--------------------------------------------------------------------------*/
 /* FUNCTIONS FOR CLASS FreeList */
 /*--------------------------------------------------------------------------*/

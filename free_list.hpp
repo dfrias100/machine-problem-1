@@ -37,6 +37,9 @@ private:
   unsigned int cookie; /* To check whether this is a genuine header! */
   size_t length;
   bool is_free;
+  
+  SegmentHeader* next;
+  SegmentHeader* prev;
 
   // You will need additional data here!
   
@@ -49,6 +52,19 @@ public:
 
   void CheckValid();
   /* Check if the cookie is valid. */
+
+  size_t Length();
+  /* Return the length of the segment */
+
+  SegmentHeader* Next();
+  /* Return the pointer to the next segment. */
+
+  SegmentHeader* Prev();
+  /* Return the pointer to the previous segment. */
+
+  SegmentHeader* Split(size_t _length);
+  /* Return a pointer to a segment split at length. */
+
 };
 
 /*--------------------------------------------------------------------------*/
@@ -83,6 +99,9 @@ public:
   bool Add(SegmentHeader * _segment); 
   /* Add the segment to the given free list. */
   
+  SegmentHeader* Head();
+  /* Return a pointer to the head of the free list. */
+
 };
 
 #endif 

@@ -75,6 +75,19 @@ void SegmentHeader::CheckValid() {
   }
 }
 
+const SegmentHeader* SegmentHeader::Next() {
+  return this->next;
+}
+
+
+const SegmentHeader* SegmentHeader::Prev() {
+  return this->prev;
+}
+
+const size_t SegmentHeader::Length() {
+  return this->length;
+}
+
 SegmentHeader* SegmentHeader::Split(size_t _length) {
   SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length, 1);
   this->length = _length;
@@ -99,4 +112,8 @@ bool FreeList::Add(SegmentHeader * _segment) {
 
 bool FreeList::Remove(SegmentHeader * _segment) {
   assert(false); // This implementation does nothing, other than abort.
+}
+
+SegmentHeader* FreeList::Head() {
+  return head;
 }

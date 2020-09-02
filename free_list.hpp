@@ -53,13 +53,13 @@ public:
   void CheckValid();
   /* Check if the cookie is valid. */
 
-  size_t Length();
+  const size_t Length();
   /* Return the length of the segment */
 
-  SegmentHeader* Next();
+  const SegmentHeader* Next();
   /* Return the pointer to the next segment. */
 
-  SegmentHeader* Prev();
+  const SegmentHeader* Prev();
   /* Return the pointer to the previous segment. */
 
   SegmentHeader* Split(size_t _length);
@@ -82,6 +82,7 @@ class FreeList {
  private:
 
   /* Here you add whatever private members you need...*/
+  SegmentHeader* head;
 
 public:
 

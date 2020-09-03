@@ -56,9 +56,9 @@ using namespace std;
 /* FUNCTIONS FOR CLASS MyAllocator */
 /*--------------------------------------------------------------------------*/
 
-MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _sz(_size), _blk_sz(_basic_block_size) {
+MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
     start = std::malloc(_size);
-    SegmentHeader* init_seg = new (start) SegmentHeader(_size, 1);
+    SegmentHeader* init_seg = new (start) SegmentHeader(_size);
     free_list.Add(init_seg);
 }
 

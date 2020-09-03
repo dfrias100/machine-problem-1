@@ -59,6 +59,9 @@ SegmentHeader::SegmentHeader(size_t _length, bool _is_free) {
   length = _length;
   is_free = _is_free;
   cookie = COOKIE_VALUE;
+
+  next = nullptr;
+  prev = nullptr;
   // You may need to initialize more members here!
 }
 
@@ -75,21 +78,31 @@ void SegmentHeader::CheckValid() {
   }
 }
 
-const SegmentHeader* SegmentHeader::Next() {
+SegmentHeader* SegmentHeader::Next() {
   return this->next;
 }
 
 
-const SegmentHeader* SegmentHeader::Prev() {
+SegmentHeader* SegmentHeader::Prev() {
   return this->prev;
 }
+
+void SegmentHeader::SetNext(SegmentHeader* _segment) {
+  this->next = _segment;
+}
+
+
+void SegmentHeader::SetPrev(SegmentHeader* _segment) {
+  this->prev = _segment;
+}
+
 
 const size_t SegmentHeader::Length() {
   return this->length;
 }
 
 SegmentHeader* SegmentHeader::Split(size_t _length) {
-  SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length, 1);
+  SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length);
   this->length = _length;
   return seg_new;
 }
@@ -99,7 +112,7 @@ SegmentHeader* SegmentHeader::Split(size_t _length) {
 /*--------------------------------------------------------------------------*/
 
 FreeList::FreeList() {
-  // You will need to add code here!
+  head = nullptr;
 }
 
 FreeList::~FreeList() {
@@ -107,11 +120,14 @@ FreeList::~FreeList() {
 }
 
 bool FreeList::Add(SegmentHeader * _segment) {
-  assert(false); // This implementation does nothing, other than abort.
+  SegmentHeader* old_head = head;
+  head = _segment;
+  head->SetNext(old_head);
+  return true;
 }
 
 bool FreeList::Remove(SegmentHeader * _segment) {
-  assert(false); // This implementation does nothing, other than abort.
+  _segment->Occupy();
 }
 
 SegmentHeader* FreeList::Head() {

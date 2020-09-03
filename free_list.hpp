@@ -56,14 +56,20 @@ public:
   const size_t Length();
   /* Return the length of the segment */
 
-  const SegmentHeader* Next();
+  SegmentHeader* Next();
   /* Return the pointer to the next segment. */
 
-  const SegmentHeader* Prev();
+  SegmentHeader* Prev();
   /* Return the pointer to the previous segment. */
 
   SegmentHeader* Split(size_t _length);
   /* Return a pointer to a segment split at length. */
+
+  void SetNext(SegmentHeader* _segment);
+  /* Sets the next pointer. */
+
+  void SetPrev(SegmentHeader* _segment);
+  /* Sets the prev pointer. */
 
 };
 

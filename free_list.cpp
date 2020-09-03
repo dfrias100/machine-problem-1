@@ -98,21 +98,14 @@ void SegmentHeader::SetPrev(SegmentHeader* _segment) {
 
 
 const size_t SegmentHeader::Length() {
-  return this->length;
+  size_t len = this->length;
+  return len;
 }
 
 SegmentHeader* SegmentHeader::Split(size_t _length) {
   SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length);
   this->length = _length;
   return seg_new;
-}
-
-void SegmentHeader::SetFree() {
-  this->is_free = true;
-}
-
-void SegmentHeader::Occupy() {
-  this->is_free = false;
 }
  
 /*--------------------------------------------------------------------------*/
@@ -131,11 +124,28 @@ bool FreeList::Add(SegmentHeader * _segment) {
   SegmentHeader* old_head = head;
   head = _segment;
   head->SetNext(old_head);
+  if (old_head)
+    old_head->SetPrev(head);
   return true;
 }
 
 bool FreeList::Remove(SegmentHeader * _segment) {
-  _segment->Occupy();
+  SegmentHeader* prev_node = _segment->Prev();
+  SegmentHeader* next_node = _segment->Next();
+
+  if (_segment == head && next_node) {
+    head = next_node;
+    head->SetPrev(nullptr);
+  } else if (_segment == head && !next_node) {
+    head = nullptr;
+  } else if (!next_node) {
+    prev_node->SetNext(nullptr);
+  } else {
+    prev_node->SetNext(next_node);
+    next_node->SetPrev(prev_node);
+  }
+
+  return true;
 }
 
 SegmentHeader* FreeList::Head() {

@@ -65,6 +65,11 @@ public:
   SegmentHeader* Split(size_t _length);
   /* Return a pointer to a segment split at length. */
 
+  void SetFree();
+  /* Sets a segment free. */
+
+  void Occupy();
+  /* Sets a segment to occupied. */
 };
 
 /*--------------------------------------------------------------------------*/

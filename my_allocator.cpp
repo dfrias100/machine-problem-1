@@ -85,6 +85,7 @@ void* MyAllocator::Malloc(size_t _length) {
         return NULL;
     
     free_list.Remove(seg);
+    seg->Occupy();
 
     if (seg->Length() > len) {
         SegmentHeader* seg2 = seg->Split(len);
@@ -97,6 +98,7 @@ void* MyAllocator::Malloc(size_t _length) {
 bool MyAllocator::Free(void* _a) {
     cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
+    seg->SetFree();
     free_list.Add(seg);
     return true;
 }

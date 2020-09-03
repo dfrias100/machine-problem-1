@@ -59,7 +59,7 @@ SegmentHeader::SegmentHeader(size_t _length, bool _is_free) {
   length = _length;
   is_free = _is_free;
   cookie = COOKIE_VALUE;
-
+  
   next = nullptr;
   prev = nullptr;
   // You may need to initialize more members here!
@@ -105,6 +105,14 @@ SegmentHeader* SegmentHeader::Split(size_t _length) {
   SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length);
   this->length = _length;
   return seg_new;
+}
+
+void SegmentHeader::SetFree() {
+  this->is_free = true;
+}
+
+void SegmentHeader::Occupy() {
+  this->is_free = false;
 }
  
 /*--------------------------------------------------------------------------*/

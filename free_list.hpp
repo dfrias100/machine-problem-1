@@ -71,6 +71,11 @@ public:
   void SetPrev(SegmentHeader* _segment);
   /* Sets the prev pointer. */
 
+  void SetFree();
+  /* Sets a segment free. */
+
+  void Occupy();
+  /* Sets a segment to occupied. */
 };
 
 /*--------------------------------------------------------------------------*/

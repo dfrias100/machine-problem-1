@@ -98,8 +98,7 @@ void SegmentHeader::SetPrev(SegmentHeader* _segment) {
 
 
 const size_t SegmentHeader::Length() {
-  size_t len = this->length;
-  return len;
+  return length;
 }
 
 SegmentHeader* SegmentHeader::Split(size_t _length) {

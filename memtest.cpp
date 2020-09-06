@@ -218,6 +218,11 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
+    if (block_size > mem_size) {
+        cout << "Block size is larger than the memory size, please decrease the value of the block size." << endl;
+        return 1;
+    }
+
     for (;;) { // Loop forewer, or until we break.
         
         // Create new allocator (gets destroyed automatically at end of iteration)

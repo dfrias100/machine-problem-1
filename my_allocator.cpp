@@ -70,7 +70,7 @@ void* MyAllocator::Malloc(size_t _length) {
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
     size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
     len *= _blk_sz;
-    if (len < _length) {
+    if (len < _length + sizeof(SegmentHeader)) {
         len = (_length + sizeof(SegmentHeader)) / _blk_sz;
         len++;
         len *= _blk_sz;

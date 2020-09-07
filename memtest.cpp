@@ -198,11 +198,11 @@ int main(int argc, char * argv[]) {
     while((opt = getopt(argc, argv, ":b:s:")) != -1) {
         switch (opt) {
             case 'b':
-                block_size = atoi(optarg);
+                sscanf(optarg, "%llu", &block_size);
                 break;
             case 's':
                 // Memory size should be in bytes
-                mem_size = atoi(optarg);
+                sscanf(optarg, "%llu", &mem_size);
                 break;
             case ':':
                 cout << "Option requires an argument" << endl;

@@ -123,6 +123,7 @@ bool FreeList::Add(SegmentHeader * _segment) {
   SegmentHeader* old_head = head;
   head = _segment;
   head->SetNext(old_head);
+  head->SetPrev(nullptr);
   if (old_head)
     old_head->SetPrev(head);
   return true;
@@ -131,6 +132,9 @@ bool FreeList::Add(SegmentHeader * _segment) {
 bool FreeList::Remove(SegmentHeader * _segment) {
   SegmentHeader* prev_node = _segment->Prev();
   SegmentHeader* next_node = _segment->Next();
+
+  _segment->SetNext(nullptr);
+  _segment->SetPrev(nullptr);
 
   if (_segment == head && next_node) {
     head = next_node;

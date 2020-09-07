@@ -59,6 +59,7 @@ using namespace std;
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
     start = std::malloc(_size);
     SegmentHeader* init_seg = new (start) SegmentHeader(_size);
+    init_seg->CheckValid();
     free_list.Add(init_seg);
 }
 
@@ -76,9 +77,11 @@ void* MyAllocator::Malloc(size_t _length) {
         len *= _blk_sz;
     }
     SegmentHeader* seg = free_list.Head();
+    seg->CheckValid();
 
     while (seg != nullptr && seg->Length() < len) {
         seg = seg->Next();
+        seg->CheckValid();
     }
 
     if (seg == nullptr)
@@ -88,6 +91,7 @@ void* MyAllocator::Malloc(size_t _length) {
 
     if (seg->Length() > len) {
         SegmentHeader* seg2 = seg->Split(len);
+        seg2->CheckValid();
         free_list.Add(seg2);
     }
     void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
@@ -97,6 +101,7 @@ void* MyAllocator::Malloc(size_t _length) {
 bool MyAllocator::Free(void* _a) {
     cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
+    seg->CheckValid();
     free_list.Add(seg);
     return true;
 }

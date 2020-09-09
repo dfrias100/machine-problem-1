@@ -91,7 +91,7 @@ void* MyAllocator::Malloc(size_t _length) {
 
     free_list.Remove(seg);
 
-    if (seg->Length() > len && len + sizeof(SegmentHeader) < seg->Length()) {
+    if (seg->Length() > len) {
         SegmentHeader* seg2 = seg->Split(len);
         seg2->CheckValid();
         free_list.Add(seg2);

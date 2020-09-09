@@ -108,6 +108,9 @@ public:
   SegmentHeader* Head();
   /* Return a pointer to the head of the free list. */
 
+  void pretty_print();
+  /* Prints the list. */
+
 };
 
 #endif 

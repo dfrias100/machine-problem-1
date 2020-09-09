@@ -221,6 +221,9 @@ int main(int argc, char * argv[]) {
     if (block_size > mem_size) {
         cout << "Block size is larger than the memory size, please decrease the value of the block size." << endl;
         return 1;
+    } else if (block_size < sizeof(SegmentHeader)) {
+        cout << "Block size needs to be greater than " << sizeof(SegmentHeader) << ".";
+        return 1;
     }
 
     for (;;) { // Loop forewer, or until we break.

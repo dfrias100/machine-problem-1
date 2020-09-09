@@ -70,7 +70,7 @@ SegmentHeader::~SegmentHeader() {
 }
 
 void SegmentHeader::CheckValid() {
-  cout << "Node ptr: " << this << endl;
+  //cout << "Node ptr: " << this << endl;
   if (cookie != COOKIE_VALUE) {
     cout << "INVALID SEGMENT HEADER!!" << endl;
     assert(false);

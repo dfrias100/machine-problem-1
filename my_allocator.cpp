@@ -86,16 +86,21 @@ void* MyAllocator::Malloc(size_t _length) {
             seg->CheckValid();
     }
 
-    size_t _SH_LEN = ceil(sizeof(SegmentHeader) / (double) _blk_sz);
-
-    if (len + _SH_LEN >= seg->Length())
-
     if (seg == nullptr)
         return NULL;
+    else if (len + _blk_sz * ceil(sizeof(SegmentHeader) / (double) _blk_sz) > seg->Length() && len != seg->Length()) {
+        while (seg != nullptr && seg->Length() < len + _blk_sz * ceil(sizeof(SegmentHeader) / (double) _blk_sz)) {
+            seg = seg->Next();
+            if(seg)
+                seg->CheckValid();
+        }
+        if (seg == nullptr)
+            return NULL;
+    }
 
     free_list.Remove(seg);
 
-    if (seg->Length() > len && len + sizeof(SegmentHeader) < seg->Length()) {
+    if (seg->Length() > len) {
         SegmentHeader* seg2 = seg->Split(len);
         seg2->CheckValid();
         free_list.Add(seg2);

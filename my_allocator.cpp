@@ -26,6 +26,7 @@
 #include "my_allocator.hpp"
 #include <assert.h>
 #include <iostream>
+#include <cmath>
 
 /*--------------------------------------------------------------------------*/
 /* NAME SPACES */ 
@@ -85,6 +86,10 @@ void* MyAllocator::Malloc(size_t _length) {
             seg->CheckValid();
     }
 
+    size_t _SH_LEN = ceil(sizeof(SegmentHeader) / (double) _blk_sz);
+
+    if (len + _SH_LEN >= seg->Length())
+
     if (seg == nullptr)
         return NULL;
 
@@ -95,7 +100,7 @@ void* MyAllocator::Malloc(size_t _length) {
         seg2->CheckValid();
         free_list.Add(seg2);
     }
-    free_list.pretty_print();
+    //free_list.pretty_print();
     void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
     return ptr;
 }
@@ -105,7 +110,7 @@ bool MyAllocator::Free(void* _a) {
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
     seg->CheckValid();
     free_list.Add(seg);
-    free_list.pretty_print();
+    //free_list.pretty_print();
     return true;
 }
 

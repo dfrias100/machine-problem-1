@@ -62,11 +62,10 @@ SegmentHeader::SegmentHeader(size_t _length, bool _is_free) {
   
   next = nullptr;
   prev = nullptr;
-  // You may need to initialize more members here!
 }
 
 SegmentHeader::~SegmentHeader() {
-  // You may need to add code here.
+  // No code needed.
 }
 
 void SegmentHeader::CheckValid() {
@@ -117,15 +116,16 @@ FreeList::FreeList() {
 }
 
 FreeList::~FreeList() {
-  // You may need to add code here.
+  // No code needed.
 }
 
 bool FreeList::Add(SegmentHeader * _segment) {
-  SegmentHeader* old_head = head;
+  SegmentHeader* old_head = head; // Record the old head, this could be nullptr
   head = _segment;
+  /* Setting addresses */
   head->SetNext(old_head);
   head->SetPrev(nullptr);
-  if (old_head)
+  if (old_head) // If the list was not empty, we have to set the prev pointer of this segment
     old_head->SetPrev(head);
   return true;
 }
@@ -134,17 +134,22 @@ bool FreeList::Remove(SegmentHeader * _segment) {
   SegmentHeader* prev_node = _segment->Prev();
   SegmentHeader* next_node = _segment->Next();
 
+  /* Removing references to the prev and next nodes */
   _segment->SetNext(nullptr);
   _segment->SetPrev(nullptr);
 
   if (_segment == head && next_node) {
+    /* The segment is the head and the freelist is larger than 1 node */
     head = next_node;
     head->SetPrev(nullptr);
   } else if (_segment == head && !next_node) {
+    /* The segment is the head and the only segment in the freelist */
     head = nullptr;
   } else if (!next_node) {
+    /* The segment is the tail of the freelist */
     prev_node->SetNext(nullptr);
   } else {
+    /* The node is neither the head or the tail */
     prev_node->SetNext(next_node);
     next_node->SetPrev(prev_node);
   }
@@ -157,6 +162,7 @@ SegmentHeader* FreeList::Head() {
 }
 
 void FreeList::pretty_print() {
+  /* This function prints the previous address, the address of the SegmentHeader, its length, and the next address */
   cout << "Prev     |   Address   |   Length   |     Next" << endl;
   if (!head) {
     cout << "Segment list is empty." << endl;

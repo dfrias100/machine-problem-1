@@ -46,10 +46,8 @@ class MyAllocator {
 
  private:
 
-  // YOU MAY NEED TO ADD YOUR OWN DATA STRUCTURES HERE.
   void* start;
   FreeList free_list;
-
   size_t _blk_sz;
   
  public:

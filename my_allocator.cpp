@@ -26,7 +26,6 @@
 #include "my_allocator.hpp"
 #include <assert.h>
 #include <iostream>
-#include <cmath>
 
 /*--------------------------------------------------------------------------*/
 /* NAME SPACES */ 
@@ -70,9 +69,12 @@ MyAllocator::~MyAllocator() {
 
 void* MyAllocator::Malloc(size_t _length) {
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
+    /* Rounding up the length in terms of block sizes */
     size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
     len *= _blk_sz;
     if (len < _length + sizeof(SegmentHeader)) {
+        /* The requested length may not be divisible by the block size, so the integer division performed will 
+        make the length too short once it is multiplied by the block size. */
         len = (_length + sizeof(SegmentHeader)) / _blk_sz;
         len++;
         len *= _blk_sz;
@@ -82,7 +84,7 @@ void* MyAllocator::Malloc(size_t _length) {
 
     while (seg != nullptr && seg->Length() < len) {
         seg = seg->Next();
-        if(seg)
+        if(seg) // Preventing segfaults if we cannot find a long enough segment; don't bother checking the header of a nullptr
             seg->CheckValid();
     }
 

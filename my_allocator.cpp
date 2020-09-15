@@ -57,9 +57,11 @@ using namespace std;
 /*--------------------------------------------------------------------------*/
 
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
+    cout << "Constructing allocator..." << endl;
     size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
     size_t _allocation_size = _blk_sz * _num_of_blocks;
-    free_lists = (FreeList *) std::malloc(_num_of_blocks*sizeof(FreeList));
+    size_t fl_sz = Fibonacci(_num_of_blocks, 1) + 1;
+    free_lists = (FreeList *) std::malloc(fl_sz * sizeof(FreeList));
 
     start = std::malloc(_allocation_size);
     SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);
@@ -88,8 +90,8 @@ void* MyAllocator::Malloc(size_t _length) {
         len *= _blk_sz;
     }
     size_t len_blks = Fibonacci(len / _blk_sz, 1);
-    SegmentHeader* seg = free_lists[len_blks].Head();
-    //SegmentHeader* seg = free_list.Head();
+    //SegmentHeader* seg = free_lists[len_blks].Head();
+    SegmentHeader* seg = free_list.Head();
     seg->CheckValid();
 
     while (seg != nullptr && seg->Length() < len) {
@@ -101,7 +103,8 @@ void* MyAllocator::Malloc(size_t _length) {
     if (seg == nullptr)
         return NULL;
 
-    free_lists[len_blks].Remove(seg);
+    //free_lists[len_blks].Remove(seg);
+    free_list.Remove(seg);
 
     if (seg->Length() > len) {
         // TODO: Find way to split
@@ -124,14 +127,14 @@ bool MyAllocator::Free(void* _a) {
     return true;
 }
 
-size_t Fibonacci(size_t _min_num, bool _ret_idx) {
+size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
     size_t f1 = 1;
     size_t f2 = 2;
     size_t fn = 0;
     size_t idx = 1;
     
     // Finding the correct fibonacci number for the requested input
-    while (fn < _min_num && (_min_num == 1 || _min_num == 2)) {
+    while (fn < _min_num && (_min_num != 1 || _min_num != 2)) {
         fn = f1 + f2;
         
         f1 = f2;

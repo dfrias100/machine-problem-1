@@ -57,13 +57,21 @@ using namespace std;
 /*--------------------------------------------------------------------------*/
 
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
-    start = std::malloc(_size);
-    SegmentHeader* init_seg = new (start) SegmentHeader(_size);
+    size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
+    size_t _allocation_size = _blk_sz * _num_of_blocks;
+    free_lists = (FreeList *) std::malloc(_num_of_blocks*sizeof(FreeList));
+
+    start = std::malloc(_allocation_size);
+    SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);
     init_seg->CheckValid();
+
+    free_lists[_num_of_blocks - 1].Add(init_seg);
+
     free_list.Add(init_seg);
 }
 
 MyAllocator::~MyAllocator() {
+    std::free(free_lists); // Free the memory used by the array of FreeLists
     std::free(start); // Free all the memory from the allocator
 }
 
@@ -79,7 +87,9 @@ void* MyAllocator::Malloc(size_t _length) {
         len++;
         len *= _blk_sz;
     }
-    SegmentHeader* seg = free_list.Head();
+    size_t len_blks = Fibonacci(len / _blk_sz, 1);
+    SegmentHeader* seg = free_lists[len_blks].Head();
+    //SegmentHeader* seg = free_list.Head();
     seg->CheckValid();
 
     while (seg != nullptr && seg->Length() < len) {
@@ -91,13 +101,15 @@ void* MyAllocator::Malloc(size_t _length) {
     if (seg == nullptr)
         return NULL;
 
-    free_list.Remove(seg);
+    free_lists[len_blks].Remove(seg);
 
     if (seg->Length() > len) {
+        // TODO: Find way to split
         SegmentHeader* seg2 = seg->Split(len);
         seg2->CheckValid();
         free_list.Add(seg2);
     }
+
     //free_list.pretty_print();
     void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
     return ptr;
@@ -112,3 +124,35 @@ bool MyAllocator::Free(void* _a) {
     return true;
 }
 
+size_t Fibonacci(size_t _min_num, bool _ret_idx) {
+    size_t f1 = 1;
+    size_t f2 = 2;
+    size_t fn = 0;
+    size_t idx = 1;
+    
+    // Finding the correct fibonacci number for the requested input
+    while (fn < _min_num && (_min_num == 1 || _min_num == 2)) {
+        fn = f1 + f2;
+        
+        f1 = f2;
+        f2 = fn;
+        idx++;
+    }
+
+    // Returns the index for the intention of accessing a free list or a fibonacci number for memory allocation
+    if (_ret_idx) {
+        if (_min_num == 1)
+            return 0;
+        else if (_min_num == 2)
+            return 1;
+        else
+            return idx;
+    } else {
+        if (_min_num == 1)
+            return f1;
+        else if (_min_num == 2)
+            return f2;
+        else
+            return fn;
+    }
+}

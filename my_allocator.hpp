@@ -46,12 +46,13 @@ class MyAllocator {
 
  private:
 
-  // YOU MAY NEED TO ADD YOUR OWN DATA STRUCTURES HERE.
   void* start;
   FreeList free_list;
-
   size_t _blk_sz;
-  
+   
+  FreeList* free_lists;
+
+
  public:
   MyAllocator(size_t _basic_block_size, size_t _size); 
   /* This function initializes the memory allocator and makes a portion of 
@@ -76,6 +77,10 @@ class MyAllocator {
   bool Free(void* _a); 
   /* Frees the section of physical memory previously allocated 
      using ’Malloc’. Returns true if everything ok. */ 
+
+  size_t Fibonacci(size_t _min_num, bool _ret_idx);
+  /* Returns a fibonacci number greater than the minimum number provided, 
+     or the index to a fibbonaci number (for FreeList array) */
 };
 
 #endif 

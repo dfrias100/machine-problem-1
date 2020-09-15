@@ -37,6 +37,9 @@ private:
   unsigned int cookie; /* To check whether this is a genuine header! */
   size_t length;
   bool is_free;
+  // 0 for left buddy, 1 for right buddy
+  bool inheritance;
+  bool buddy_type;
   
   SegmentHeader* next;
   SegmentHeader* prev;

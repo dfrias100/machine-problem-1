@@ -198,11 +198,13 @@ int main(int argc, char * argv[]) {
     while((opt = getopt(argc, argv, ":b:s:")) != -1) {
         switch (opt) {
             case 'b':
-                sscanf(optarg, "%llu", &block_size);
+                // Block size should be in bytes
+                // Using sscanf to properly get an argument of size_t size
+                sscanf(optarg, "%zu", &block_size);
                 break;
             case 's':
                 // Memory size should be in bytes
-                sscanf(optarg, "%llu", &mem_size);
+                sscanf(optarg, "%zu", &mem_size);
                 break;
             case ':':
                 cout << "Option requires an argument" << endl;
@@ -218,8 +220,14 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
+    // If the block size was smaller than the memory size, it would not be able to reserve even one block in Malloc()
     if (block_size > mem_size) {
         cout << "Block size is larger than the memory size, please decrease the value of the block size." << endl;
+        return 1;
+    } else if (block_size < sizeof(SegmentHeader)) {
+        /* The split function can chop off some of the segment header and overwrite memory if the block size does not
+        at least equal the size of a SegmentHeader */
+        cout << "Block size needs to be greater than " << sizeof(SegmentHeader) << ".";
         return 1;
     }
 

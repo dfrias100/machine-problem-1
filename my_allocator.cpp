@@ -81,7 +81,8 @@ void* MyAllocator::Malloc(size_t _length) {
 
     while (seg != nullptr && seg->Length() < len) {
         seg = seg->Next();
-        seg->CheckValid();
+        if(seg)
+            seg->CheckValid();
     }
 
     if (seg == nullptr)
@@ -94,6 +95,7 @@ void* MyAllocator::Malloc(size_t _length) {
         seg2->CheckValid();
         free_list.Add(seg2);
     }
+    free_list.pretty_print();
     void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
     return ptr;
 }
@@ -103,6 +105,7 @@ bool MyAllocator::Free(void* _a) {
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
     seg->CheckValid();
     free_list.Add(seg);
+    free_list.pretty_print();
     return true;
 }
 

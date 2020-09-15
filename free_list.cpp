@@ -70,6 +70,7 @@ SegmentHeader::~SegmentHeader() {
 }
 
 void SegmentHeader::CheckValid() {
+  cout << "Node ptr: " << this << endl;
   if (cookie != COOKIE_VALUE) {
     cout << "INVALID SEGMENT HEADER!!" << endl;
     assert(false);
@@ -153,4 +154,21 @@ bool FreeList::Remove(SegmentHeader * _segment) {
 
 SegmentHeader* FreeList::Head() {
   return head;
+}
+
+void FreeList::pretty_print() {
+  cout << "Prev     |   Address   |   Length   |     Next" << endl;
+  if (!head) {
+    cout << "Segment list is empty." << endl;
+  } else if (head && !head->Next()) {
+    cout << head->Prev() << " | " << head << " | " << head->Length() << " | " << head->Next() << endl;
+    return;
+  } else {
+    SegmentHeader* current = head;
+    while(current != nullptr) {
+      cout << current->Prev() << " | " << current << " | " << current->Length() << " | " << current->Next() << endl;
+      current = current->Next();
+    }
+    return;
+  }
 }

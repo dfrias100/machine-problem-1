@@ -67,6 +67,7 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
     SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);
     init_seg->CheckValid();
 
+    cout << "Here" << endl;
     free_lists[_num_of_blocks - 1].Add(init_seg);
 
     free_list.Add(init_seg);

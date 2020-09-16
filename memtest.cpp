@@ -68,8 +68,13 @@ unsigned long num_allocations;
 
 void* operator new(std::size_t sz) throw(std::bad_alloc) {
     cout << "global op new called, size = " << sz << endl;
-    assert(ptr_global_allocator != nullptr);
-    void *ptr = ptr_global_allocator->Malloc(sz);
+    /* assert(ptr_global_allocator != nullptr);
+    void *ptr = ptr_global_allocator->Malloc(sz);*/
+    if (ptr_global_allocator == nullptr)
+        ptr = std::malloc(sz);
+    else
+        ptr = ptr_global_allocator->Malloc(sz);
+        
     if (ptr)
         return ptr;
     else {
@@ -281,6 +286,7 @@ int main(int argc, char * argv[]) {
         cout << "Number of allocate/free cycles: " << num_allocations << endl;
         cout << endl << endl;
         
+        ptr_global_allocator = NULL;
     }
     
     cout << "Reached end of Ackerman program. Thank you for using it" << endl;

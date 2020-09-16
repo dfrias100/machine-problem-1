@@ -89,7 +89,7 @@ void operator delete(void* ptr) throw()
 {
     //assert(ptr_global_allocator != nullptr);
     cout << "global op delete called" << endl;
-    if (ptr_global_allocator == nullptr)
+    if (ptr_global_allocator != nullptr)
         ptr_global_allocator->Free(ptr);
     else
         std::free(ptr);    

@@ -70,10 +70,11 @@ void* operator new(std::size_t sz) throw(std::bad_alloc) {
     cout << "global op new called, size = " << sz << endl;
     /* assert(ptr_global_allocator != nullptr);
     void *ptr = ptr_global_allocator->Malloc(sz);*/
+    void* ptr;
     if (ptr_global_allocator == nullptr)
-        void* ptr = std::malloc(sz);
+        ptr = std::malloc(sz);
     else
-        void* ptr = ptr_global_allocator->Malloc(sz);
+        ptr = ptr_global_allocator->Malloc(sz);
 
     if (ptr)
         return ptr;

@@ -72,7 +72,7 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
     init_seg->CheckValid();
 
     cout << "Here" << endl;
-    free_lists.at(_num_of_blocks - 1).Add(init_seg);
+    free_lists[list_sz - 1].Add(init_seg);
     cout << "Here" << endl;
     free_list.Add(init_seg);
 }

@@ -57,6 +57,7 @@ using namespace std;
 /*--------------------------------------------------------------------------*/
 
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
+    cout << "Constructing allocator..." << endl;
     size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
     size_t _allocation_size = _blk_sz * _num_of_blocks;
     size_t list_sz = Fibonacci(_num_of_blocks, 1);
@@ -102,6 +103,7 @@ void* MyAllocator::Malloc(size_t _length) {
         return NULL;
 
     //free_lists[len_blks].Remove(seg);
+    free_list.Remove(seg);
 
     if (seg->Length() > len) {
         // TODO: Find way to split
@@ -124,14 +126,14 @@ bool MyAllocator::Free(void* _a) {
     return true;
 }
 
-size_t Fibonacci(size_t _min_num, bool _ret_idx) {
+size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
     size_t f1 = 1;
     size_t f2 = 2;
     size_t fn = 0;
     size_t idx = 1;
     
     // Finding the correct fibonacci number for the requested input
-    while (fn < _min_num && (_min_num == 1 || _min_num == 2)) {
+    while (fn < _min_num && (_min_num != 1 || _min_num != 2)) {
         fn = f1 + f2;
         
         f1 = f2;

@@ -59,9 +59,13 @@ using namespace std;
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
     cout << "Constructing allocator..." << endl;
     size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
+    cout << "Blocks requested: " << _num_of_blocks << endl;
     size_t _allocation_size = _blk_sz * _num_of_blocks;
+    cout << "Total memory pool size: " << _allocation_size << "B" << endl;
     size_t list_sz = Fibonacci(_num_of_blocks, 1);
+    cout << "Required FreeList array size: " << list_sz << " FreeLists" << endl;
     free_lists = vector<FreeList>(list_sz);
+    cout << "Vector size: " << free_lists.size() << endl;
 
     start = std::malloc(_allocation_size);
     SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);

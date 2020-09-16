@@ -59,7 +59,8 @@ using namespace std;
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
     size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
     size_t _allocation_size = _blk_sz * _num_of_blocks;
-    free_lists = (FreeList *) std::malloc(_num_of_blocks*sizeof(FreeList));
+    size_t list_sz = Fibonacci(_num_of_blocks, 1);
+    free_lists = vector<FreeList>(list_sz);
 
     start = std::malloc(_allocation_size);
     SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);
@@ -71,7 +72,6 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
 }
 
 MyAllocator::~MyAllocator() {
-    std::free(free_lists); // Free the memory used by the array of FreeLists
     std::free(start); // Free all the memory from the allocator
 }
 
@@ -88,8 +88,8 @@ void* MyAllocator::Malloc(size_t _length) {
         len *= _blk_sz;
     }
     size_t len_blks = Fibonacci(len / _blk_sz, 1);
-    SegmentHeader* seg = free_lists[len_blks].Head();
-    //SegmentHeader* seg = free_list.Head();
+    //SegmentHeader* seg = free_lists[len_blks].Head();
+    SegmentHeader* seg = free_list.Head();
     seg->CheckValid();
 
     while (seg != nullptr && seg->Length() < len) {
@@ -101,7 +101,7 @@ void* MyAllocator::Malloc(size_t _length) {
     if (seg == nullptr)
         return NULL;
 
-    free_lists[len_blks].Remove(seg);
+    //free_lists[len_blks].Remove(seg);
 
     if (seg->Length() > len) {
         // TODO: Find way to split

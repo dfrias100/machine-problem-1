@@ -24,6 +24,7 @@
 /*--------------------------------------------------------------------------*/
 
 #include <cstdlib>
+#include <vector>
 #include "free_list.hpp"
 
 /*--------------------------------------------------------------------------*/
@@ -50,7 +51,7 @@ class MyAllocator {
   FreeList free_list;
   size_t _blk_sz;
    
-  FreeList* free_lists;
+  vector<FreeList> free_lists;
 
 
  public:

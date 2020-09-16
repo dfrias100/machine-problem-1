@@ -87,9 +87,12 @@ void* operator new(std::size_t sz) throw(std::bad_alloc) {
 void operator delete(void* ptr) throw()
 // The use of throw() is deprecated, but clang throws a hissi-fit wihouth it.
 {
-    assert(ptr_global_allocator != nullptr);
+    //assert(ptr_global_allocator != nullptr);
     cout << "global op delete called" << endl;
-    ptr_global_allocator->Free(ptr);
+    if (ptr_global_allocator == nullptr)
+        ptr_global_allocator->Free(ptr);
+    else
+        std::free(ptr);    
 };
 
 /*--------------------------------------------------------------------------*/

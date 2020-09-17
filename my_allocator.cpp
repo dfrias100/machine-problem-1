@@ -127,11 +127,13 @@ MyAllocator::~MyAllocator() {
 } */
 
 void* MyAllocator::Malloc(size_t _length) {
+    void* ptr;
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
     size_t len = ceil((_length + sizeof(SegmentHeader)) / (double) _blk_sz);
     cout << "Minimum length in blocks: " << len << " blocks" << endl;
     size_t _len_blks = Fibonacci(len, 0);
     cout << "Length needed in blocks: " << _len_blks << " blocks" << endl;
+
     size_t idx = 0;
     while (idx < _list_sz && (!free_lists[idx].Head() || Fibonacci(idx + 1) < _len_blks)) {
         idx++;
@@ -144,16 +146,18 @@ void* MyAllocator::Malloc(size_t _length) {
     SegmentHeader* seg = free_lists[idx].Head();
     free_lists[idx].Remove(seg);
 
-    if (seg->Length() > _blk_sz * _len_blks) { 
+    if ((seg->Length() / _blk_sz) == _len_blks) {
+        ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
+        return ptr;
+    } else { 
         size_t _split_at = _blk_sz * Fibonacci(idx);
         cout << "Splitting at length: " << _split_at << "B" << endl;
         SegmentHeader* seg2 = seg->Split(_split_at);
         free_lists[idx - 2].Add(seg);
         free_lists[idx - 1].Add(seg2);
+        ptr = Malloc(len * _blk_sz);
+        return ptr;
     }
-    
-    void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
-    return ptr;
 }
 
 bool MyAllocator::Free(void* _a) {

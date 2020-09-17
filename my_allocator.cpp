@@ -24,6 +24,7 @@
 
 #include <cstdlib>
 #include "my_allocator.hpp"
+#include <cmath>
 #include <assert.h>
 #include <iostream>
 
@@ -65,17 +66,17 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
     size_t _allocation_size = _blk_sz * _num_of_blocks;
     cout << "Total memory pool size: " << _allocation_size << "B" << endl;
 
-    size_t list_sz = Fibonacci(_num_of_blocks, 1);
-    cout << "Required FreeList array size: " << list_sz << " FreeLists" << endl;
+    _list_sz = Fibonacci(_num_of_blocks, 1) + 1;
+    cout << "Required FreeList array size: " << _list_sz << " FreeLists" << endl;
 
-    free_lists = vector<FreeList>(list_sz);
+    free_lists = vector<FreeList>(_list_sz);
     cout << "Vector size: " << free_lists.size() << endl;
 
     start = std::malloc(_allocation_size);
     SegmentHeader* init_seg = new (start) SegmentHeader(_allocation_size);
     init_seg->CheckValid();
 
-    free_lists[list_sz - 1].Add(init_seg);
+    free_lists[_list_sz - 1].Add(init_seg);
  
     free_list.Add(init_seg);
 }
@@ -84,15 +85,15 @@ MyAllocator::~MyAllocator() {
     std::free(start); // Free all the memory from the allocator
 }
 
-void* MyAllocator::Malloc(size_t _length) {
-    cout << "MyAllocator::Malloc called with length = " << _length << endl;
+/* void* MyAllocator::Malloc(size_t _length) {
+    cout << "MyAllocator::Malloc called with length = " << _length << endl; */
     /* Rounding up the length in terms of block sizes */
-    size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
+    /* size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
     len *= _blk_sz;
-    if (len < _length + sizeof(SegmentHeader)) {
+    if (len < _length + sizeof(SegmentHeader)) { */
         /* The requested length may not be divisible by the block size, so the integer division performed will 
         make the length too short once it is multiplied by the block size. */
-        len = (_length + sizeof(SegmentHeader)) / _blk_sz;
+        /* len = (_length + sizeof(SegmentHeader)) / _blk_sz;
         len++;
         len *= _blk_sz;
     }
@@ -123,13 +124,44 @@ void* MyAllocator::Malloc(size_t _length) {
     //free_list.pretty_print();
     void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
     return ptr;
+} */
+
+void* MyAllocator::Malloc(size_t _length) {
+    cout << "MyAllocator::Malloc called with length = " << _length << endl;
+    size_t len = ceil((_length + sizeof(SegmentHeader)) / (double) _blk_sz);
+    cout << "Minimum length in blocks: " << len << " blocks" << endl;
+    size_t _len_blks = Fibonacci(len, 0);
+    cout << "Length needed in blocks: " << _len_blks << " blocks" << endl;
+    size_t idx = 0;
+    while (idx < _list_sz && (!free_lists[idx].Head() || Fibonacci(idx + 1) < _len_blks)) {
+        idx++;
+    }
+    if (idx == _list_sz) {
+        return NULL;
+    }
+
+    // while loop?
+    SegmentHeader* seg = free_lists[idx].Head();
+    free_lists[idx].Remove(seg);
+
+    if (seg->Length() > _blk_sz * _len_blks) { 
+        size_t _split_at = _blk_sz * Fibonacci(idx);
+        cout << "Splitting at length: " << _split_at << "B" << endl;
+        SegmentHeader* seg2 = seg->Split(_split_at);
+        free_lists[idx - 2].Add(seg);
+        free_lists[idx - 1].Add(seg2);
+    }
+    
+    void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
+    return ptr;
 }
 
 bool MyAllocator::Free(void* _a) {
     cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
     seg->CheckValid();
-    free_list.Add(seg);
+    size_t idx = Fibonacci(seg->Length() / _blk_sz, 1);
+    free_lists[idx].Add(seg);
     //free_list.pretty_print();
     return true;
 }
@@ -164,5 +196,25 @@ size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
             return f2;
         else
             return fn;
+    }
+}
+
+size_t MyAllocator::Fibonacci(size_t _input) {
+    size_t f1 = 1;
+    size_t f2 = 2;
+    size_t fn = 0;
+
+    if (_input == 1)
+        return f1;
+    else if (_input == 2)
+        return f2;
+    else {
+        for (size_t i = 2; i < _input; i++) {
+            fn = f1 + f2;
+
+            f1 = f2;
+            f2 = fn;
+        }
+        return fn;
     }
 }

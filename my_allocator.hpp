@@ -50,8 +50,9 @@ class MyAllocator {
   void* start;
   FreeList free_list;
   size_t _blk_sz;
+  size_t _list_sz;
    
-  vector<FreeList> free_lists;
+  std::vector<FreeList> free_lists;
 
 
  public:
@@ -81,7 +82,10 @@ class MyAllocator {
 
   size_t Fibonacci(size_t _min_num, bool _ret_idx);
   /* Returns a fibonacci number greater than the minimum number provided, 
-     or the index to a fibbonaci number (for FreeList array) */
+     or the index to a fibonaci number (for FreeList array) */
+
+  size_t Fibonacci(size_t _input);
+  /* Returns the nth fibonacci number */
 };
 
 #endif 

@@ -60,7 +60,7 @@ using namespace std;
 MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basic_block_size) {
     cout << "Constructing allocator..." << endl;
 
-    size_t _num_of_blocks = Fibonacci(_size / _blk_sz, 0);
+    size_t _num_of_blocks = Fibonacci(ceil(_size / (double) _blk_sz), 0);
     cout << "Blocks requested: " << _num_of_blocks << endl;
 
     size_t _allocation_size = _blk_sz * _num_of_blocks;
@@ -78,7 +78,7 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
 
     free_lists[_list_sz - 1].Add(init_seg);
  
-    free_list.Add(init_seg);
+    // free_list.Add(init_seg);
 }
 
 MyAllocator::~MyAllocator() {
@@ -128,6 +128,7 @@ MyAllocator::~MyAllocator() {
 
 void* MyAllocator::Malloc(size_t _length) {
     void* ptr;
+
     cout << "MyAllocator::Malloc called with length = " << _length << endl;
     size_t len = ceil((_length + sizeof(SegmentHeader)) / (double) _blk_sz);
     cout << "Minimum length in blocks: " << len << " blocks" << endl;
@@ -135,14 +136,12 @@ void* MyAllocator::Malloc(size_t _length) {
     cout << "Length needed in blocks: " << _len_blks << " blocks" << endl;
 
     size_t idx = 0;
-    while (idx < _list_sz && (!free_lists[idx].Head() || Fibonacci(idx + 1) < _len_blks)) {
+    while (idx < _list_sz && (!free_lists[idx].Head() || Fibonacci(idx + 1) < _len_blks))
         idx++;
-    }
     if (idx == _list_sz) {
         return NULL;
     }
 
-    // while loop?
     SegmentHeader* seg = free_lists[idx].Head();
     free_lists[idx].Remove(seg);
 

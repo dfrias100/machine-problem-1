@@ -48,7 +48,7 @@ class MyAllocator {
  private:
 
   void* start;
-  FreeList free_list;
+  // FreeList free_list;
   size_t _blk_sz;
   size_t _list_sz;
    

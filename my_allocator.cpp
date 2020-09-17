@@ -153,8 +153,8 @@ void* MyAllocator::Malloc(size_t _length) {
         size_t _split_at = _blk_sz * Fibonacci(idx);
         cout << "Splitting at length: " << _split_at << "B" << endl;
         SegmentHeader* seg2 = seg->Split(_split_at);
-        free_lists[idx - 2].Add(seg);
-        free_lists[idx - 1].Add(seg2);
+        free_lists[idx - 1].Add(seg);
+        free_lists[idx - 2].Add(seg2);
         ptr = Malloc(len * _blk_sz);
         return ptr;
     }

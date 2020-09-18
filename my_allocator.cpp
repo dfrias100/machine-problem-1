@@ -145,7 +145,7 @@ void* MyAllocator::Malloc(size_t _length) {
     SegmentHeader* seg = free_lists[idx].Head();
     free_lists[idx].Remove(seg);
 
-    if ((seg->Length() / _blk_sz) == _len_blks) {
+    if ((seg->Length() / _blk_sz) == _len_blks || idx <= 1) {
         ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
         return ptr;
     } else { 

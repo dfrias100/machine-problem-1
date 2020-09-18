@@ -43,8 +43,6 @@ private:
   
   SegmentHeader* next;
   SegmentHeader* prev;
-
-  // You will need additional data here!
   
 public:
 

@@ -238,7 +238,7 @@ size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
     size_t idx = 1;
     
     // Finding the correct fibonacci number for the requested input
-    while (fn < _min_num && (_min_num != 1 || _min_num != 2)) {
+    while (fn < _min_num && _min_num != 1 && _min_num != 2) {
         fn = f1 + f2;
         
         f1 = f2;

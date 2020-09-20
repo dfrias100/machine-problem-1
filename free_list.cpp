@@ -122,6 +122,14 @@ void SegmentHeader::SetBuddyType(BT _buddytype) {
   this->buddy_type = _buddytype;
 }
 
+BT SegmentHeader::GetInheritance() {
+  return inheritance;
+}
+
+BT SegmentHeader::GetBuddyType() {
+  return buddy_type;
+}
+
 void SegmentHeader::SetUsed() {
   is_free = false;
 }

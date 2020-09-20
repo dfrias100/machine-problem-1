@@ -179,6 +179,7 @@ bool MyAllocator::Free(void* _a) {
 
     size_t idx = Fibonacci(seg->Length() / _blk_sz, 1);
     if (idx == _list_sz - 1)  {
+        seg->SetFree();
         free_lists[idx].Add(seg);
         return true;
     } else if (seg->GetBuddyType() == BT::LEFT_BUDDY) {
@@ -188,6 +189,7 @@ bool MyAllocator::Free(void* _a) {
         idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
 
         if (idx_seg2 != idx - 1 || !seg2->IsFree()) {
+            seg->SetFree();
             free_lists[idx].Add(seg);
             return true;
         }
@@ -198,6 +200,7 @@ bool MyAllocator::Free(void* _a) {
         idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
 
         if (idx_seg2 != idx + 1 || !seg2->IsFree()) {
+            seg->SetFree();
             free_lists[idx].Add(seg);
             return true;
         }

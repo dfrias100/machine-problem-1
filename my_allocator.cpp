@@ -172,6 +172,7 @@ void* MyAllocator::Malloc(size_t _length) {
 
 bool MyAllocator::Free(void* _a) {
     // TODO: test this garbage code
+    cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader));
     SegmentHeader* seg2;
     size_t len;

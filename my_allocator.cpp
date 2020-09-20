@@ -220,6 +220,8 @@ bool MyAllocator::Free(void* _a) {
 
     mseg = bbseg;
 
+    mseg->Coalesce(sbseg);
+
     mseg->SetBuddyType(sbseg->GetInheritance());
     mseg->SetInheritance(bbseg->GetInheritance());
 

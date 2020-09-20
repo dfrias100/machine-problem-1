@@ -141,6 +141,10 @@ void SegmentHeader::SetFree() {
 bool SegmentHeader::IsFree() {
   return is_free;
 }
+
+void SegmentHeader::Coalesce(SegmentHeader* seg2) {
+  this->length += seg2->length;
+}
  
 /*--------------------------------------------------------------------------*/
 /* FUNCTIONS FOR CLASS FreeList */

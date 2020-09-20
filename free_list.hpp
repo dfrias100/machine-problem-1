@@ -94,6 +94,9 @@ public:
 
   bool IsFree();
   /* Returns if it is free or not */
+
+  void Coalesce(SegmentHeader* seg2);
+  /* Coalesces the header with a second segment */
 };
 
 /*--------------------------------------------------------------------------*/

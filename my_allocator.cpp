@@ -222,7 +222,7 @@ bool MyAllocator::Free(void* _a) {
 
     void* ptr = (void *) ((char *)mseg + sizeof(SegmentHeader));
 
-    free(ptr);
+    Free(ptr);
 }
 
 size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {

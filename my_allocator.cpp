@@ -146,6 +146,7 @@ void* MyAllocator::Malloc(size_t _length) {
     free_lists[idx].Remove(seg);
 
     if ((seg->Length() / _blk_sz) == _len_blks || idx <= 1) {
+        seg->SetUsed();
         ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
         return ptr;
     } else { 
@@ -159,7 +160,7 @@ void* MyAllocator::Malloc(size_t _length) {
     }
 }
 
-bool MyAllocator::Free(void* _a) {
+/*bool MyAllocator::Free(void* _a) {
     cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
     seg->CheckValid();
@@ -167,6 +168,61 @@ bool MyAllocator::Free(void* _a) {
     free_lists[idx].Add(seg);
     //free_list.pretty_print();
     return true;
+}*/
+
+bool MyAllocator::Free(void* _a) {
+    // TODO: test this garbage code
+    SegmentHeader* seg = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader));
+    SegmentHeader* seg2;
+    size_t len;
+    size_t idx_seg2;
+
+    size_t idx = Fibonacci(seg->Length() / _blk_sz, 1);
+    if (idx == _list_sz - 1)  {
+        free_lists[idx].Add(seg);
+        return true;
+    } else if (seg->GetBuddyType() == BT::LEFT_BUDDY) {
+        len = _blk_sz * Fibonacci(idx + 1);
+        seg2 = (SegmentHeader *) (len + (char*)_a - sizeof(SegmentHeader));
+
+        idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
+
+        if (idx_seg2 != idx - 1 || !seg2->IsFree()) {
+            free_lists[idx].Add(seg);
+            return true;
+        }
+    } else if (seg->GetBuddyType() == BT::RIGHT_BUDDY) {
+        len = _blk_sz * Fibonacci(idx + 2);
+        seg2 = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader) - len);
+
+        idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
+
+        if (idx_seg2 != idx + 1 || !seg2->IsFree()) {
+            free_lists[idx].Add(seg);
+            return true;
+        }
+    }
+
+    SegmentHeader* bbseg;
+    SegmentHeader* sbseg;
+    SegmentHeader* mseg;
+
+    if (seg->Length() > seg2->Length()) {
+        bbseg = seg;
+        sbseg = seg2;
+    } else {
+        bbseg = seg2;
+        sbseg = seg;
+    }
+
+    mseg = bbseg;
+
+    mseg->SetBuddyType(sbseg->GetInheritance());
+    mseg->SetInheritance(bbseg->GetInheritance());
+
+    void* ptr = (void *) ((char *)mseg + sizeof(SegmentHeader));
+
+    free(ptr);
 }
 
 size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {

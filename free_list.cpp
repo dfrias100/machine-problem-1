@@ -104,7 +104,34 @@ const size_t SegmentHeader::Length() {
 SegmentHeader* SegmentHeader::Split(size_t _length) {
   SegmentHeader* seg_new = new ((void *)((char *)this + _length)) SegmentHeader(this->length - _length);
   this->length = _length;
+
+  this->SetInheritance(this->GetInheritance());
+  seg_new->SetInheritance(this->GetBuddyType());
+
+  this->SetBuddyType(BT::LEFT_BUDDY);
+  seg_new->SetBuddyType(BT::RIGHT_BUDDY);
+
   return seg_new;
+}
+
+void SegmentHeader::SetInheritance(BT _buddytype) {
+  this->inheritance = _buddytype;
+}
+
+void SegmentHeader::SetBuddyType(BT _buddytype) {
+  this->buddy_type = _buddytype;
+}
+
+void SegmentHeader::SetUsed() {
+  is_free = false;
+}
+  
+void SegmentHeader::SetFree() {
+  is_free = true;
+}
+
+bool SegmentHeader::IsFree() {
+  return is_free;
 }
  
 /*--------------------------------------------------------------------------*/

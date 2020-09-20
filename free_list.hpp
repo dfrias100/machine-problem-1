@@ -29,6 +29,8 @@
 /* DATA STRUCTURES */ 
 /*--------------------------------------------------------------------------*/
 
+enum class BT {LEFT_BUDDY, RIGHT_BUDDY};
+
 class SegmentHeader {
 
 private:
@@ -38,8 +40,8 @@ private:
   size_t length;
   bool is_free;
   // 0 for left buddy, 1 for right buddy
-  bool inheritance;
-  bool buddy_type;
+  BT inheritance;
+  BT buddy_type;
   
   SegmentHeader* next;
   SegmentHeader* prev;
@@ -71,6 +73,27 @@ public:
 
   void SetPrev(SegmentHeader* _segment);
   /* Sets the prev pointer. */
+
+  void SetBuddyType(BT _buddytype);
+  /* Sets the buddy type */
+  
+  void SetInheritance(BT _buddytype);
+  /* Sets the inheritance */
+
+  BT GetInheritance();
+  /* Gets the inheritance type */
+
+  BT GetBuddyType();
+  /* Gets the buddy type */
+
+  void SetUsed();
+  /* Sets the segment as used */
+  
+  void SetFree();
+  /* Sets the segment free */
+
+  bool IsFree();
+  /* Returns if it is free or not */
 };
 
 /*--------------------------------------------------------------------------*/

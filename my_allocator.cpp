@@ -77,54 +77,11 @@ MyAllocator::MyAllocator(size_t _basic_block_size, size_t _size) : _blk_sz(_basi
     init_seg->CheckValid();
 
     free_lists[_list_sz - 1].Add(init_seg);
- 
-    // free_list.Add(init_seg);
 }
 
 MyAllocator::~MyAllocator() {
     std::free(start); // Free all the memory from the allocator
 }
-
-/* void* MyAllocator::Malloc(size_t _length) {
-    cout << "MyAllocator::Malloc called with length = " << _length << endl; */
-    /* Rounding up the length in terms of block sizes */
-    /* size_t len = (_length + sizeof(SegmentHeader)) / _blk_sz;
-    len *= _blk_sz;
-    if (len < _length + sizeof(SegmentHeader)) { */
-        /* The requested length may not be divisible by the block size, so the integer division performed will 
-        make the length too short once it is multiplied by the block size. */
-        /* len = (_length + sizeof(SegmentHeader)) / _blk_sz;
-        len++;
-        len *= _blk_sz;
-    }
-    size_t len_blks = Fibonacci(len / _blk_sz, 1);
-    //SegmentHeader* seg = free_lists[len_blks].Head();
-    SegmentHeader* seg = free_list.Head();
-    seg->CheckValid();
-
-    while (seg != nullptr && seg->Length() < len) {
-        seg = seg->Next();
-        if(seg) // Preventing segfaults if we cannot find a long enough segment; don't bother checking the header of a nullptr
-            seg->CheckValid();
-    }
-
-    if (seg == nullptr)
-        return NULL;
-
-    //free_lists[len_blks].Remove(seg);
-    free_list.Remove(seg);
-
-    if (seg->Length() > len) {
-        // TODO: Find way to split
-        SegmentHeader* seg2 = seg->Split(len);
-        seg2->CheckValid();
-        free_list.Add(seg2);
-    }
-
-    //free_list.pretty_print();
-    void* ptr = (void *) ((char *)seg + sizeof(SegmentHeader));
-    return ptr;
-} */
 
 void* MyAllocator::Malloc(size_t _length) {
     void* ptr;
@@ -153,6 +110,7 @@ void* MyAllocator::Malloc(size_t _length) {
         size_t _split_at = _blk_sz * Fibonacci(idx);
         cout << "Splitting at length: " << _split_at << "B" << endl;
         SegmentHeader* seg2 = seg->Split(_split_at);
+        seg2->CheckValid();
         free_lists[idx - 1].Add(seg);
         free_lists[idx - 2].Add(seg2);
         ptr = Malloc(len * _blk_sz);
@@ -160,51 +118,69 @@ void* MyAllocator::Malloc(size_t _length) {
     }
 }
 
-/*bool MyAllocator::Free(void* _a) {
-    cout << "MyAllocator::Free called" << endl;
-    SegmentHeader* seg = (SegmentHeader*) ((char*)_a - sizeof(SegmentHeader));
-    seg->CheckValid();
-    size_t idx = Fibonacci(seg->Length() / _blk_sz, 1);
-    free_lists[idx].Add(seg);
-    //free_list.pretty_print();
-    return true;
-}*/
-
 bool MyAllocator::Free(void* _a) {
-    // TODO: test this garbage code
     cout << "MyAllocator::Free called" << endl;
     SegmentHeader* seg = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader));
+    cout << "Obtained seg, checking validity..." << endl;
+    seg->CheckValid();
+
     SegmentHeader* seg2;
     size_t len;
     size_t idx_seg2;
 
+    cout << "seg length (in blocks): " << seg->Length() / _blk_sz << endl;
     size_t idx = Fibonacci(seg->Length() / _blk_sz, 1);
+    cout << "seg idx in FreeList array: " << idx << endl;
+
+    cout << "Buddy type of seg: " << (int) seg->GetBuddyType() << endl;
+
     if (idx == _list_sz - 1)  {
+        cout << "All heap blocks have been freed." << endl;
         seg->SetFree();
         free_lists[idx].Add(seg);
         return true;
     } else if (seg->GetBuddyType() == BT::LEFT_BUDDY) {
-        len = _blk_sz * Fibonacci(idx + 1);
-        seg2 = (SegmentHeader *) (len + (char*)_a - sizeof(SegmentHeader));
+        len = seg->Length();
+        cout << "Length of seg2 needs to be: " << Fibonacci(idx) << endl;
 
+        seg2 = (SegmentHeader *) (len + (char*)_a - sizeof(SegmentHeader));
+        cout << "Obtained seg2, checking validity..." << endl;
+        seg2->CheckValid();
+
+        cout << "Length of seg2 (in blocks): " << seg2->Length() / _blk_sz << endl;
         idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
+        cout << "Index of seg2: " << idx_seg2 << endl;
+
+        cout << "Is seg2 free? " << seg2->IsFree() << endl; 
 
         if (idx_seg2 != idx - 1 || !seg2->IsFree()) {
+            cout << "seg2 did not qualify to coalesce, adding seg to FreeList..." << endl;
             seg->SetFree();
             free_lists[idx].Add(seg);
             return true;
         }
+        free_lists[idx - 1].Remove(seg2);
     } else if (seg->GetBuddyType() == BT::RIGHT_BUDDY) {
         len = _blk_sz * Fibonacci(idx + 2);
-        seg2 = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader) - len);
+        cout << "Length of seg2 needs to be: " << len  / _blk_sz << endl;
 
+        seg2 = (SegmentHeader *) ((char*)_a - sizeof(SegmentHeader) - len);
+        cout << "Obtained seg2, checking validity..." << endl;
+        seg2->CheckValid();
+
+        cout << "Length of seg2 (in blocks): " << seg2->Length() / _blk_sz << endl;
         idx_seg2 = Fibonacci(seg2->Length() / _blk_sz, 1);
+        cout << "Index of seg2: " << idx_seg2 << endl;
+
+        cout << "Is seg2 free? " << seg2->IsFree() << endl; 
 
         if (idx_seg2 != idx + 1 || !seg2->IsFree()) {
+            cout << "seg2 did not qualify to coalesce, adding seg to FreeList..." << endl;
             seg->SetFree();
             free_lists[idx].Add(seg);
             return true;
         }
+        free_lists[idx + 1].Remove(seg2);
     }
 
     SegmentHeader* bbseg;
@@ -229,6 +205,7 @@ bool MyAllocator::Free(void* _a) {
     void* ptr = (void *) ((char *)mseg + sizeof(SegmentHeader));
 
     Free(ptr);
+    return true;
 }
 
 size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
@@ -265,6 +242,7 @@ size_t MyAllocator::Fibonacci(size_t _min_num, bool _ret_idx) {
 }
 
 size_t MyAllocator::Fibonacci(size_t _input) {
+    // Computes the fibonacci sequence; the function begins at 1. i.e. F*(1) = 1, F*(2) = 2,... 
     size_t f1 = 1;
     size_t f2 = 2;
     size_t fn = 0;

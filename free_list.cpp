@@ -62,6 +62,9 @@ SegmentHeader::SegmentHeader(size_t _length, bool _is_free) {
   
   next = nullptr;
   prev = nullptr;
+
+  buddy_type = BT::NO_BUDDY;
+  inheritance = BT::NO_BUDDY;
 }
 
 SegmentHeader::~SegmentHeader() {
@@ -200,7 +203,7 @@ SegmentHeader* FreeList::Head() {
   return head;
 }
 
-void FreeList::pretty_print() {
+void FreeList::PrettyPrint() {
   /* This function prints the previous address, the address of the SegmentHeader, its length, and the next address */
   cout << "Prev     |   Address   |   Length   |     Next" << endl;
   if (!head) {

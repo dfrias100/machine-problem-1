@@ -89,10 +89,10 @@ void operator delete(void* ptr) throw()
 {
     //assert(ptr_global_allocator != nullptr);
     cout << "global op delete called" << endl;
-    if (ptr_global_allocator != nullptr)
-        ptr_global_allocator->Free(ptr);
+    if (ptr_global_allocator == nullptr)
+        std::free(ptr);
     else
-        std::free(ptr);    
+        ptr_global_allocator->Free(ptr);
 };
 
 /*--------------------------------------------------------------------------*/
@@ -262,9 +262,15 @@ int main(int argc, char * argv[]) {
         int a, b; // Parameters for the invocation of the Ackerman function.
         
         cout << "  a = "; cin >> a;
-        if (a <= 0) break;
+        if (a <= 0) { 
+            ptr_global_allocator = NULL;
+            break;
+        }
         cout << "  b = "; cin >> b;
-        if (b <= 0) break;
+        if (b <= 0) {
+            ptr_global_allocator = NULL;
+            break;
+        }
         
         cout << "FOO      a = " << a << ", b = " << b << endl;
         

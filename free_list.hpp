@@ -29,7 +29,7 @@
 /* DATA STRUCTURES */ 
 /*--------------------------------------------------------------------------*/
 
-enum class BT {LEFT_BUDDY, RIGHT_BUDDY};
+enum class BT {LEFT_BUDDY, RIGHT_BUDDY, NO_BUDDY};
 
 class SegmentHeader {
 
@@ -39,7 +39,7 @@ private:
   unsigned int cookie; /* To check whether this is a genuine header! */
   size_t length;
   bool is_free;
-  // 0 for left buddy, 1 for right buddy
+ 
   BT inheritance;
   BT buddy_type;
   
@@ -135,7 +135,7 @@ public:
   SegmentHeader* Head();
   /* Return a pointer to the head of the free list. */
 
-  void pretty_print();
+  void PrettyPrint();
   /* Prints the list. */
 
 };
